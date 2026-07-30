@@ -1,6 +1,19 @@
 # Kubernetes Demo App
 
-A containerized Python Flask web application deployed on Kubernetes, demonstrating core DevOps practices including Docker containerization, Kubernetes orchestration, self-healing, and zero-downtime rolling updates.
+![CI/CD](https://github.com/GeorgeAmpa/k8s-demo-app/actions/workflows/ci-cd.yml/badge.svg)
+
+A containerized Python Flask web application deployed on Kubernetes, demonstrating core DevOps practices including Docker containerization, Kubernetes orchestration, self-healing, and zero-downtime rolling updates — with a full CI/CD pipeline via GitHub Actions.
+
+## CI/CD Pipeline
+
+```
+git push → GitHub Actions → docker build → push to ghcr.io → ready to deploy
+```
+
+Every push to `main` automatically:
+1. Builds a new Docker image
+2. Tags it with the git commit SHA
+3. Pushes it to GitHub Container Registry (ghcr.io)
 
 ## Architecture
 
@@ -12,6 +25,9 @@ Browser → Kubernetes Service (NodePort) → Kubernetes Deployment → Flask Ap
 
 ```
 k8s-demo-app/
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml       # GitHub Actions CI/CD pipeline
 ├── app/
 │   ├── app.py              # Flask web application
 │   └── requirements.txt    # Python dependencies
@@ -98,4 +114,6 @@ kubectl scale deployment/k8s-demo-app --replicas=3
 - **Application:** Python 3.12 / Flask
 - **Containerization:** Docker
 - **Orchestration:** Kubernetes (minikube)
+- **CI/CD:** GitHub Actions
+- **Container Registry:** GitHub Container Registry (ghcr.io)
 - **OS:** Linux (python:3.12-slim base image)
