@@ -33,7 +33,8 @@ k8s-demo-app/
 │   └── requirements.txt    # Python dependencies
 ├── k8s/
 │   ├── deployment.yaml     # Kubernetes Deployment (2 replicas)
-│   └── service.yaml        # Kubernetes Service (NodePort)
+│   ├── service.yaml        # Kubernetes Service (NodePort)
+│   └── servicemonitor.yaml # Prometheus ServiceMonitor
 ├── Dockerfile              # Container image definition
 └── README.md
 ```
@@ -42,13 +43,15 @@ k8s-demo-app/
 
 | Concept | Implementation |
 |---|---|
-| Containerization | Multi-stage Dockerfile with layer caching |
+| Containerization | Dockerfile with optimized layer caching |
 | High Availability | 2 replicas running simultaneously |
 | Self-healing | Kubernetes auto-restarts crashed pods |
 | Zero-downtime deploy | Rolling update strategy |
 | Health checks | Liveness & Readiness probes on `/health` |
 | Resource management | CPU and memory requests/limits defined |
 | Configuration | Environment variables injected via Deployment |
+| Observability | Prometheus metrics + Grafana dashboards |
+| Custom metrics | HTTP request count and latency per endpoint |
 
 ## Prerequisites
 
@@ -109,6 +112,24 @@ kubectl rollout undo deployment/k8s-demo-app
 kubectl scale deployment/k8s-demo-app --replicas=3
 ```
 
+## Monitoring Stack
+
+Deployed via Helm using `kube-prometheus-stack`:
+
+```bash
+helm install monitoring prometheus-community/kube-prometheus-stack \
+  --namespace monitoring --create-namespace
+```
+
+Custom Flask metrics exposed at `/metrics`:
+- `http_requests_total` — request count by endpoint, method, status
+- `http_request_duration_seconds` — request latency histogram
+
+Access Grafana dashboard:
+```bash
+kubectl port-forward -n monitoring svc/monitoring-grafana 3000:80
+```
+
 ## Tech Stack
 
 - **Application:** Python 3.12 / Flask
@@ -116,4 +137,5 @@ kubectl scale deployment/k8s-demo-app --replicas=3
 - **Orchestration:** Kubernetes (minikube)
 - **CI/CD:** GitHub Actions
 - **Container Registry:** GitHub Container Registry (ghcr.io)
+- **Monitoring:** Prometheus + Grafana (via Helm)
 - **OS:** Linux (python:3.12-slim base image)
