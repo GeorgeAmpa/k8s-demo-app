@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: k8s-demo-app
-          image: k8s-demo-app:1.0.0
+          image: k8s-demo-app:4.0.0
           imagePullPolicy: Never
           ports:
             - containerPort: 5000
